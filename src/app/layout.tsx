@@ -15,6 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Solana Transaction Simulator",
   description: "Simulate Solana transactions and see balance changes before execution",
+  openGraph: {
+    images: [{
+      url:'/simulate-transaction.png',
+      width:1200,
+      height:630,
+      alt:"Simulate Solana Transactions"
+    }],
+  },
 };
 
 export default function RootLayout({
