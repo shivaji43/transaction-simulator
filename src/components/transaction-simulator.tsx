@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
 import { ArrowUpDown, ArrowDown, ArrowUp, Loader2 } from 'lucide-react'
 
 interface TokenAsset {
@@ -142,7 +141,7 @@ export default function TransactionSimulator() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="container mx-auto p-6 max-w-full">
       <div className="space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">Solana Transaction Simulator</h1>
@@ -151,122 +150,140 @@ export default function TransactionSimulator() {
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Input</CardTitle>
-            <CardDescription>
-              Paste your base64-encoded serialized transaction below
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter your serialized transaction (base64)..."
-              value={serializedTransaction}
-              onChange={(e) => setSerializedTransaction(e.target.value)}
-              className="min-h-[120px] font-mono text-sm"
-            />
-            <Button 
-              onClick={handleSimulate} 
-              disabled={loading || !serializedTransaction.trim()}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Simulating...
-                </>
-              ) : (
-                <>
-                  <ArrowUpDown className="w-4 h-4" />
-                  Simulate Transaction
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {error && (
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-red-600">
-                <p className="font-medium">Error</p>
-              </div>
-              <p className="text-red-700 mt-1">{error}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {result && (
-          <div className="space-y-4">
-            <Card>
+        <div className="flex gap-6 h-[calc(100vh-200px)]">
+          {/* Left Panel - Input */}
+          <div className="w-1/2 flex flex-col">
+            <Card className="flex-1 flex flex-col">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Simulation Results</CardTitle>
-                    <CardDescription>
-                      Wallet: <span className="font-mono">{result.walletBalanceChange.wallet}</span>
-                    </CardDescription>
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    result.success 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {result.success ? 'Success' : 'Failed'}
-                  </div>
-                </div>
+                <CardTitle>Transaction Input</CardTitle>
+                <CardDescription>
+                  Paste your base64-encoded serialized transaction below
+                </CardDescription>
               </CardHeader>
+              <CardContent className="space-y-4 flex-1 flex flex-col">
+                <Textarea
+                  placeholder="Enter your serialized transaction (base64)..."
+                  value={serializedTransaction}
+                  onChange={(e) => setSerializedTransaction(e.target.value)}
+                  className="flex-1 font-mono text-sm resize-none"
+                />
+                <Button 
+                  onClick={handleSimulate} 
+                  disabled={loading || !serializedTransaction.trim()}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Simulating...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowUpDown className="w-4 h-4" />
+                      Simulate Transaction
+                    </>
+                  )}
+                </Button>
+              </CardContent>
             </Card>
 
-            {result.walletBalanceChange.buying.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-600">
-                    <ArrowDown className="w-5 h-5" />
-                    Buying ({result.walletBalanceChange.buying.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Tokens being acquired in this transaction
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {result.walletBalanceChange.buying.map((token, index) => (
-                    <TokenCard key={`buy-${token.mint}-${index}`} token={token} isBuying={true} />
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            {result.walletBalanceChange.selling.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-red-600">
-                    <ArrowUp className="w-5 h-5" />
-                    Selling ({result.walletBalanceChange.selling.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Tokens being sold/spent in this transaction
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {result.walletBalanceChange.selling.map((token, index) => (
-                    <TokenCard key={`sell-${token.mint}-${index}`} token={token} isBuying={false} />
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            {result.walletBalanceChange.buying.length === 0 && result.walletBalanceChange.selling.length === 0 && (
-              <Card>
+            {error && (
+              <Card className="border-red-200 bg-red-50 mt-4">
                 <CardContent className="pt-6">
-                  <div className="text-center text-muted-foreground">
-                    <p>No balance changes detected in this transaction.</p>
+                  <div className="flex items-center gap-2 text-red-600">
+                    <p className="font-medium">Error</p>
                   </div>
+                  <p className="text-red-700 mt-1">{error}</p>
                 </CardContent>
               </Card>
             )}
           </div>
-        )}
+
+          {/* Right Panel - Results */}
+          <div className="w-1/2 flex flex-col">
+            <div className="flex-1 overflow-y-auto">
+              {result ? (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>Simulation Results</CardTitle>
+                          <CardDescription>
+                            Wallet: <span className="font-mono">{result.walletBalanceChange.wallet}</span>
+                          </CardDescription>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          result.success 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {result.success ? 'Success' : 'Failed'}
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+
+                  {result.walletBalanceChange.buying.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-green-600">
+                          <ArrowDown className="w-5 h-5" />
+                          Buying ({result.walletBalanceChange.buying.length})
+                        </CardTitle>
+                        <CardDescription>
+                          Tokens being acquired in this transaction
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {result.walletBalanceChange.buying.map((token, index) => (
+                          <TokenCard key={`buy-${token.mint}-${index}`} token={token} isBuying={true} />
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {result.walletBalanceChange.selling.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-red-600">
+                          <ArrowUp className="w-5 h-5" />
+                          Selling ({result.walletBalanceChange.selling.length})
+                        </CardTitle>
+                        <CardDescription>
+                          Tokens being sold/spent in this transaction
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {result.walletBalanceChange.selling.map((token, index) => (
+                          <TokenCard key={`sell-${token.mint}-${index}`} token={token} isBuying={false} />
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {result.walletBalanceChange.buying.length === 0 && result.walletBalanceChange.selling.length === 0 && (
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="text-center text-muted-foreground">
+                          <p>No balance changes detected in this transaction.</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              ) : (
+                <Card className="h-full flex items-center justify-center">
+                  <CardContent>
+                    <div className="text-center text-muted-foreground">
+                        <p>Enter a transaction above and click &apos;Simulate Transaction&apos; to see results here.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
