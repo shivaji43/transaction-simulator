@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowUpDown, ArrowDown, ArrowUp, Loader2 } from 'lucide-react'
+import { FaGithub } from 'react-icons/fa'
 
 interface TokenAsset {
   mint: string
@@ -143,11 +144,20 @@ export default function TransactionSimulator() {
   return (
     <div className="container mx-auto p-6 max-w-full">
       <div className="space-y-6">
-        <div className="text-center">
+        <div className="text-center relative">
           <h1 className="text-3xl font-bold tracking-tight">Solana Transaction Simulator</h1>
           <p className="text-muted-foreground mt-2">
             Simulate Solana transactions and see balance changes before execution
           </p>
+          <a
+            href="https://github.com/shivaji43/transaction-simulator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute top-0 right-0 p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="View on GitHub"
+          >
+            <FaGithub className="w-8 h-8" />
+          </a>
         </div>
 
         <div className="flex gap-6 h-[calc(100vh-200px)]">
